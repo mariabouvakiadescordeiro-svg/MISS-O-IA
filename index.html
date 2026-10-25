@@ -1,23 +1,449 @@
+
 <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<html lang="pt-BR"></html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Você decide o futuro da IA</title>
-  </head>
 
-  <body>
-  <div class="caixa-principal">
-    <h1>Você decide o futuro da IA</h1>
-    <div class="caixa-perguntas"></div>
-    <div class="caixa-alternativas"></div>
-    <div class="caixa-resultado">
-        <p class="texto-resultado"></p>
-        <script src="script.js">
-            const caixaPrincipal = document.querySelector(".caixa-principal");
-        </script>
-    </div>
-  </div>
+    <style>
+        :root {
+            --fundo: #0b0612;
+            --painel: #160d24;
+            --roxo: #8b5cf6;
+            --roxo-claro: #c4b5fd;
+            --texto: #f5f3ff;
+            --borda: #392454;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--texto);
+            background:
+                radial-gradient(circle at top, #281044 0%, transparent 45%),
+                var(--fundo);
+        }
+
+        .caixa-principal {
+            width: 100%;
+            max-width: 800px;
+            padding: 35px;
+            background: var(--painel);
+            border: 1px solid var(--borda);
+            border-radius: 22px;
+            box-shadow: 0 0 35px #8b5cf622;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            padding: 8px 14px;
+            margin-bottom: 18px;
+            border: 1px solid var(--borda);
+            border-radius: 30px;
+            color: var(--roxo-claro);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            color: var(--roxo-claro);
+            font-size: clamp(28px, 5vw, 42px);
+        }
+
+        .descricao {
+            margin-bottom: 30px;
+            color: #c4bdd1;
+            line-height: 1.7;
+        }
+
+        .progresso {
+            width: 100%;
+            height: 7px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            background: #2a1b3b;
+            border-radius: 10px;
+        }
+
+        .barra {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #6d28d9, #c084fc);
+            transition: width 0.3s ease;
+        }
+
+        .contador {
+            margin-bottom: 15px;
+            color: var(--roxo-claro);
+            font-size: 13px;
+        }
+
+        .caixa-perguntas {
+            margin-bottom: 25px;
+            font-size: 19px;
+            line-height: 1.7;
+        }
+
+        .caixa-alternativas {
+            display: grid;
+            gap: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 17px;
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            background: #211331;
+            color: var(--texto);
+            font-size: 15px;
+            line-height: 1.5;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        button:hover {
+            border-color: var(--roxo);
+            background: #35204d;
+            transform: translateY(-2px);
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--roxo-claro);
+            outline-offset: 3px;
+        }
+
+        .caixa-resultado {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            border: 1px solid var(--roxo);
+            border-radius: 14px;
+            background: #211331;
+        }
+
+        .caixa-resultado h2 {
+            margin-bottom: 15px;
+            color: var(--roxo-claro);
+        }
+
+        .texto-resultado {
+            color: #e9ddff;
+            line-height: 1.8;
+        }
+
+        .reiniciar {
+            margin-top: 20px;
+            background: var(--roxo);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .reiniciar:hover {
+            background: #7c3aed;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: #81738f;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .caixa-principal {
+                padding: 24px 18px;
+            }
+
+            .caixa-perguntas {
+                font-size: 17px;
+            }
+
+            button {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="caixa-principal">
+
+        <span class="etiqueta">Experiência interativa</span>
+
+        <h1>Você decide o futuro da IA</h1>
+
+        <p class="descricao">
+            A Inteligência Artificial está transformando o mundo.
+            Suas escolhas podem ajudar a construir o futuro.
+            Responda às perguntas e descubra qual caminho você escolheria!
+        </p>
+
+        <div class="progresso">
+            <div class="barra" id="barra"></div>
+        </div>
+
+        <p class="contador" id="contador">
+            Pergunta 1 de 5
+        </p>
+
+        <div
+            class="caixa-perguntas"
+            id="pergunta"
+        ></div>
+
+        <div
+            class="caixa-alternativas"
+            id="alternativas"
+        ></div>
+
+        <section
+            class="caixa-resultado"
+            id="resultado"
+            aria-live="polite"
+        >
+            <h2>Seu futuro com a IA</h2>
+
+            <p
+                class="texto-resultado"
+                id="texto-resultado"
+            ></p>
+
+            <button
+                class="reiniciar"
+                id="reiniciar"
+                type="button"
+            >
+                Refazer experiência
+            </button>
+        </section>
+
+        <footer>
+            Tecnologia, escolhas e futuro • 2049
+        </footer>
+
+    </main>
+
+    <script>
+        const perguntas = [
+            {
+                enunciado:
+                    "Assim que saiu da escola você se depara com uma nova tecnologia, um chat que consegue responder todas as dúvidas que uma pessoa pode ter, ele também gera imagens e áudios hiper-realistas. Qual o primeiro pensamento?",
+
+                alternativas: [
+                    {
+                        texto: "Isso é assustador!",
+                        afirmacao:
+                            "No início, você ficou com medo do que essa tecnologia pode fazer."
+                    },
+                    {
+                        texto: "Isso é maravilhoso!",
+                        afirmacao:
+                            "Você quis saber como usar a Inteligência Artificial no seu dia a dia."
+                    }
+                ]
+            },
+
+            {
+                enunciado:
+                    "Com a descoberta desta tecnologia, chamada Inteligência Artificial (IA), uma professora de tecnologia da escola decidiu fazer uma sequência de aulas sobre esta tecnologia. No fim de uma aula ela pede que você escreva um trabalho sobre o uso de IA em sala de aula. Qual atitude você toma?",
+
+                alternativas: [
+                    {
+                        texto:
+                            "Utiliza uma ferramenta de busca na internet que utiliza IA para que ela ajude a encontrar informações relevantes para o trabalho e explique numa linguagem que facilite o entendimento.",
+
+                        afirmacao:
+                            "Você utiliza a Inteligência Artificial para pesquisar, compreender informações e facilitar seu aprendizado."
+                    },
+                    {
+                        texto:
+                            "Escreve o trabalho com base nas conversas que teve com colegas, algumas pesquisas na internet e conhecimentos próprios sobre o tema.",
+
+                        afirmacao:
+                            "Você prefere construir seu trabalho com suas próprias pesquisas, conversas e conhecimentos."
+                    }
+                ]
+            },
+
+            {
+                enunciado:
+                    "Após a elaboração do trabalho, a professora realizou um debate entre a turma para entender como foi realizada a pesquisa e escrita. Nessa conversa também foi levantado um ponto muito importante: como a IA impacta o trabalho do futuro. Nesse debate, como você se posiciona?",
+
+                alternativas: [
+                    {
+                        texto:
+                            "Defende a ideia de que a IA pode criar novas oportunidades de emprego e melhorar habilidades humanas.",
+
+                        afirmacao:
+                            "Você acredita que a IA pode criar novas oportunidades de emprego e melhorar as habilidades humanas."
+                    },
+                    {
+                        texto:
+                            "Me preocupo com as pessoas que perderão seus empregos para máquinas e defendo a importância de proteger os trabalhadores.",
+
+                        afirmacao:
+                            "Você se preocupa com os impactos da automação e defende a proteção dos trabalhadores."
+                    }
+                ]
+            },
+
+            {
+                enunciado:
+                    "Ao final da discussão, você precisou criar uma imagem no computador que representasse o que pensa sobre IA. E agora?",
+
+                alternativas: [
+                    {
+                        texto:
+                            "Criar uma imagem utilizando uma plataforma de design como o Paint.",
+
+                        afirmacao:
+                            "Você escolhe criar sua imagem usando uma plataforma de desenho, valorizando suas próprias habilidades criativas."
+                    },
+                    {
+                        texto:
+                            "Criar uma imagem utilizando um gerador de imagem de IA.",
+
+                        afirmacao:
+                            "Você escolhe experimentar um gerador de imagens de Inteligência Artificial para expressar suas ideias."
+                    }
+                ]
+            },
+
+            {
+                enunciado:
+                    "Você tem um trabalho em grupo de biologia para entregar na semana seguinte, o andamento do trabalho está um pouco atrasado e uma pessoa do seu grupo decidiu fazer com ajuda de uma IA. O problema é que o trabalho está totalmente igual ao do chat. O que você faz?",
+
+                alternativas: [
+                    {
+                        texto:
+                            "Escrever comandos para o chat é uma forma de contribuir com o trabalho, por isso não é um problema utilizar o texto inteiro.",
+
+                        afirmacao:
+                            "Você valoriza a praticidade da IA, mas precisa considerar a importância de verificar as informações e produzir um trabalho original."
+                    },
+                    {
+                        texto:
+                            "O chat pode ser uma tecnologia muito avançada, mas é preciso manter a atenção pois toda máquina erra, por isso revisar o trabalho e contribuir com as perspectivas pessoais é essencial.",
+
+                        afirmacao:
+                            "Você entende que a IA pode cometer erros e que revisar o trabalho, verificar as informações e acrescentar ideias próprias é essencial."
+                    }
+                ]
+            }
+        ];
+
+        const caixaPerguntas =
+            document.getElementById("pergunta");
+
+        const caixaAlternativas =
+            document.getElementById("alternativas");
+
+        const caixaResultado =
+            document.getElementById("resultado");
+
+        const textoResultado =
+            document.getElementById("texto-resultado");
+
+        const contador =
+            document.getElementById("contador");
+
+        const barra =
+            document.getElementById("barra");
+
+        const botaoReiniciar =
+            document.getElementById("reiniciar");
+
+        let atual = 0;
+        let historiaFinal = [];
+
+        function mostraPergunta() {
+            if (atual >= perguntas.length) {
+                mostraResultado();
+                return;
+            }
+
+            const perguntaAtual = perguntas[atual];
+
+            caixaPerguntas.textContent =
+                perguntaAtual.enunciado;
+
+            caixaAlternativas.replaceChildren();
+
+            contador.textContent =
+                `Pergunta ${atual + 1} de ${perguntas.length}`;
+
+            barra.style.width =
+                `${(atual / perguntas.length) * 100}%`;
+
+            perguntaAtual.alternativas.forEach((alternativa) => {
+                const botao = document.createElement("button");
+
+                botao.type = "button";
+                botao.textContent = alternativa.texto;
+
+                botao.addEventListener("click", () => {
+                    historiaFinal.push(alternativa.afirmacao);
+
+                    atual++;
+
+                    mostraPergunta();
+                });
+
+                caixaAlternativas.appendChild(botao);
+            });
+        }
+
+        function mostraResultado() {
+            caixaPerguntas.textContent =
+                "Em 2049, o futuro continua em suas mãos.";
+
+            caixaAlternativas.replaceChildren();
+
+            contador.textContent =
+                "Experiência concluída";
+
+            barra.style.width = "100%";
+
+            textoResultado.textContent =
+                historiaFinal.join(" ");
+
+            caixaResultado.style.display = "block";
+        }
+
+        function reiniciarExperiencia() {
+            atual = 0;
+            historiaFinal = [];
+
+            caixaResultado.style.display = "none";
+
+            mostraPergunta();
+        }
+
+        botaoReiniciar.addEventListener(
+            "click",
+            reiniciarExperiencia
+        );
+
+        mostraPergunta();
+    </script>
+
 </body>
 </html>
